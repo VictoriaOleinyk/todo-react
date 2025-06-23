@@ -1,40 +1,148 @@
-import { useEffect, useState } from 'react'
-import Button from '@mui/material/Button'
-
-import reactLogo from '../assets/react.svg'
-import viteLogo from '/vite.svg'
+import { AccountCircle } from '@mui/icons-material'
 import './App.css'
 import AppBar from './AppBar.tsx'
+import { Container, InputAdornment, Stack, TextField, ToggleButton, ToggleButtonGroup } from '@mui/material'
+import { Visibility, VisibilityOff } from '@mui/icons-material'
+import IconButton from '@mui/material/IconButton'
+import Button from '@mui/material/Button'
+import { type SyntheticEvent, useState } from 'react'
 
 function App() {
-	const [count, setCount] = useState(0)
-	useEffect(() => {
-		console.log(count)
-	}, [])
+	const [username, setUsername] = useState('')
+	const [password, setPassword] = useState('')
+	const [loading, setLoading] = useState(false)
+	const [loginFormName, setLoginFormName] = useState('login')
+	const [showPassword, setShowPassword] = useState(false)
+
+	const toggleShowPassword = () => setShowPassword((prev) => !prev)
+
+	const handleUserNameChange = (e: SyntheticEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+		setUsername(e.currentTarget.value)
+	}
+	const handlePasswordChange = (e: SyntheticEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+		setPassword(e.currentTarget.value)
+	}
+	const handleLogin = () => {
+		setLoading(true)
+		setTimeout(() => {
+			setLoading(false)
+		}, 2000)
+	}
+	const handleChange = (_event: React.MouseEvent<HTMLElement>, newAlignment: string) => {
+		setLoginFormName(newAlignment)
+	}
+
 	return (
 		<>
 			<AppBar></AppBar>
-			<div style={{ height: 64 }}></div>
-			<div>
-				<h1>Welcome</h1>
-				<a href="https://vite.dev" target="_blank">
-					<img src={viteLogo} className="logo" alt="Vite logo" />
-				</a>
-				<a href="https://react.dev" target="_blank">
-					<img src={reactLogo} className="logo react" alt="React logo" />
-				</a>
-			</div>
-			<h1>Vite + React</h1>
-			<div className="card">
-				<Button variant={'contained'} onClick={() => setCount((count) => count + 1)}>
-					count is {count}
-				</Button>
-				<p>
-					Edit <code>src/App.tsx</code> and save to test HMR
-				</p>
-			</div>
+			<div style={{ marginTop: '100px' }}></div>
 
-			<p className="read-the-docs">Click on the Vite and React logos to learn more</p>
+			<Container maxWidth={'sm'}>
+				<ToggleButtonGroup
+					disabled={loading}
+					size="small"
+					color="primary"
+					value={loginFormName}
+					exclusive
+					onChange={handleChange}
+					aria-label="Platform"
+					fullWidth
+					sx={{ marginBottom: 2 }}
+				>
+					<ToggleButton value="login">Login</ToggleButton>
+					<ToggleButton value="register">Register</ToggleButton>
+				</ToggleButtonGroup>
+
+				{loginFormName === 'login' ? (
+					<Stack spacing={2}>
+						<TextField
+							disabled={loading}
+							value={username}
+							onChange={handleUserNameChange}
+							size={'small'}
+							label="email"
+							variant="filled"
+							InputProps={{
+								startAdornment: (
+									<InputAdornment position="start">
+										<AccountCircle />
+									</InputAdornment>
+								),
+							}}
+						/>
+						<TextField
+							disabled={loading}
+							value={password}
+							onChange={handlePasswordChange}
+							size="small"
+							label="password"
+							type={showPassword ? 'text' : 'password'}
+							variant="filled"
+							InputProps={{
+								startAdornment: (
+									<InputAdornment position="start">
+										<AccountCircle />
+									</InputAdornment>
+								),
+								endAdornment: (
+									<InputAdornment position="end">
+										<IconButton onClick={toggleShowPassword} edge="end">
+											{showPassword ? <VisibilityOff /> : <Visibility />}
+										</IconButton>
+									</InputAdornment>
+								),
+							}}
+						/>
+						<Button onClick={handleLogin} variant="contained" loadingPosition={'start'} loading={loading}>
+							{loading ? 'Loading' : 'Login'}
+						</Button>
+					</Stack>
+				) : (
+					<Stack spacing={2}>
+						<TextField
+							disabled={loading}
+							value={username}
+							onChange={handleUserNameChange}
+							size={'small'}
+							label="email"
+							variant="filled"
+							InputProps={{
+								startAdornment: (
+									<InputAdornment position="start">
+										<AccountCircle />
+									</InputAdornment>
+								),
+							}}
+						/>
+						<TextField
+							disabled={loading}
+							value={password}
+							onChange={handlePasswordChange}
+							size="small"
+							label="password"
+							type={showPassword ? 'text' : 'password'}
+							variant="filled"
+							InputProps={{
+								startAdornment: (
+									<InputAdornment position="start">
+										<AccountCircle />
+									</InputAdornment>
+								),
+								endAdornment: (
+									<InputAdornment position="end">
+										<IconButton onClick={toggleShowPassword} edge="end">
+											{showPassword ? <VisibilityOff /> : <Visibility />}
+										</IconButton>
+									</InputAdornment>
+								),
+							}}
+						/>
+						<Button onClick={handleLogin} variant="contained" loadingPosition={'start'} loading={loading}>
+							{loading ? 'Loading' : 'Register'}
+						</Button>
+					</Stack>
+				)}
+			</Container>
 		</>
 	)
 }
