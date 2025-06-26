@@ -6,8 +6,10 @@ import { Visibility, VisibilityOff } from '@mui/icons-material'
 import IconButton from '@mui/material/IconButton'
 import Button from '@mui/material/Button'
 import { type SyntheticEvent, useState } from 'react'
+import { jwtDecode } from 'jwt-decode'
 
 function App() {
+	const [user, setUser] = useState<{ access_token: string; username: string } | null>(null)
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
 	const [loading, setLoading] = useState(false)
@@ -22,11 +24,36 @@ function App() {
 	const handlePasswordChange = (e: SyntheticEvent<HTMLTextAreaElement | HTMLInputElement>) => {
 		setPassword(e.currentTarget.value)
 	}
-	const handleLogin = () => {
+	const handleLogin = async () => {
 		setLoading(true)
-		setTimeout(() => {
-			setLoading(false)
-		}, 2000)
+		const loginResponse = await fetch('https://todos-be.vercel.app/auth/login', {
+			method: 'POST',
+			body: JSON.stringify({ username, password }),
+			mode: 'cors',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		})
+		const loginData = (await loginResponse.json()) as { access_token: string; username: string }
+		const accessToken = loginData.access_token
+
+		console.log(jwtDecode(accessToken))
+		localStorage.setItem('accessToken', accessToken)
+
+		setLoading(false)
+		setUser(loginData)
+	}
+
+	const handleRegister = async () => {
+		setLoading(true)
+		await fetch('https://todos-be.vercel.app/auth/register', {
+			method: 'POST',
+			body: JSON.stringify({ username, password }),
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		})
+		setLoading(false)
 	}
 	const handleChange = (_event: React.MouseEvent<HTMLElement>, newAlignment: string) => {
 		setLoginFormName(newAlignment)
@@ -34,7 +61,7 @@ function App() {
 
 	return (
 		<>
-			<AppBar></AppBar>
+			<AppBar username={user?.username}></AppBar>
 			<div style={{ marginTop: '100px' }}></div>
 
 			<Container maxWidth={'sm'}>
@@ -137,7 +164,12 @@ function App() {
 								),
 							}}
 						/>
-						<Button onClick={handleLogin} variant="contained" loadingPosition={'start'} loading={loading}>
+						<Button
+							onClick={handleRegister}
+							variant="contained"
+							loadingPosition={'start'}
+							loading={loading}
+						>
 							{loading ? 'Loading' : 'Register'}
 						</Button>
 					</Stack>

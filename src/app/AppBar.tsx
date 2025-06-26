@@ -10,7 +10,13 @@ import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
 import { Avatar, Stack, Tooltip } from '@mui/material'
 
-const ButtonAppBar = () => {
+type Props = {
+	access_token?: string
+	username?: string
+}
+
+const ButtonAppBar = (props: Props) => {
+	const { username } = props
 	const { toggleColorMode, mode } = useThemeMode()
 
 	return (
@@ -22,21 +28,28 @@ const ButtonAppBar = () => {
 					</IconButton>
 
 					<Stack direction={'row'} spacing={2} style={{ flexGrow: 1 }}>
-						<Typography variant="h6" component="div">
-							Todos
-						</Typography>
+						{username && (
+							<Typography variant="h6" component="div">
+								Todos
+							</Typography>
+						)}
 						<Typography variant="h6" component="div">
 							About
 						</Typography>
 					</Stack>
 
 					<Button color="inherit">Login</Button>
-					<Tooltip title="User">
-						<Avatar src={''} />
-					</Tooltip>
-					<IconButton color="inherit" onClick={toggleColorMode}>
-						{mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
-					</IconButton>
+					{username ? (
+						<Tooltip title={username}>
+							<Avatar src={''} alt={username}>
+								{username[0]}
+							</Avatar>
+						</Tooltip>
+					) : (
+						<IconButton color="inherit" onClick={toggleColorMode}>
+							{mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+						</IconButton>
+					)}
 				</Toolbar>
 			</AppBar>
 		</Box>
