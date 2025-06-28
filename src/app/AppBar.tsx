@@ -5,7 +5,6 @@ import Brightness7Icon from '@mui/icons-material/Brightness7'
 import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
-import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
 import { Avatar, Stack, Tooltip } from '@mui/material'
@@ -27,7 +26,7 @@ const ButtonAppBar = (props: Props) => {
 						<MenuIcon />
 					</IconButton>
 
-					<Stack direction={'row'} spacing={2} style={{ flexGrow: 1 }}>
+					<Stack direction="row" spacing={2} style={{ flexGrow: 1 }}>
 						{username && (
 							<Typography variant="h6" component="div">
 								Todos
@@ -38,17 +37,16 @@ const ButtonAppBar = (props: Props) => {
 						</Typography>
 					</Stack>
 
-					<Button color="inherit">Login</Button>
-					{username ? (
+					<IconButton color="inherit" onClick={toggleColorMode}>
+						{mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+					</IconButton>
+
+					{username && (
 						<Tooltip title={username}>
 							<Avatar src={''} alt={username}>
 								{username[0]}
 							</Avatar>
 						</Tooltip>
-					) : (
-						<IconButton color="inherit" onClick={toggleColorMode}>
-							{mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
-						</IconButton>
 					)}
 				</Toolbar>
 			</AppBar>

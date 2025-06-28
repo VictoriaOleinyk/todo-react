@@ -4,14 +4,17 @@ import './index.css'
 import App from './App.tsx'
 import CssBaseline from '@mui/material/CssBaseline'
 import ThemeModeProvider from './ThemeContext.tsx'
+import { SnackbarProvider } from 'notistack'
 
 createRoot(document.getElementById('root')!).render(
 	<>
 		<StrictMode>
-			<ThemeModeProvider>
-				<CssBaseline />
-				<App />
-			</ThemeModeProvider>
+			<SnackbarProvider>
+				<ThemeModeProvider>
+					<CssBaseline />
+					<App />
+				</ThemeModeProvider>
+			</SnackbarProvider>
 		</StrictMode>
 	</>
 )
