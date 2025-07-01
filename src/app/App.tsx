@@ -1,20 +1,30 @@
 import './App.css'
 import AppBar from './AppBar.tsx'
-import { useState } from 'react'
+import { useEffect } from 'react'
 import Auth from '../entities/User/ui/Auth.tsx'
-import type { UserType } from '../entities/User/model/userType.ts'
+import { useUserStore } from '../entities/User/model/store/useUserStore.ts'
 import Todos from '../entities/Todo/ui/Todos.tsx'
 import { autoLogin } from '../shared/util/autoLogin.ts'
 
 function App() {
 	const userFromLS = autoLogin()
-	const [user, setUser] = useState<UserType | null>(userFromLS)
+
+	// zustand store
+	const user = useUserStore((state) => state.user)
+	const setUser = useUserStore((state) => state.setUser)
+
+	useEffect(() => {
+		if (userFromLS) {
+			setUser(userFromLS)
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [])
 
 	return (
 		<>
-			<AppBar username={user?.username}></AppBar>
+			<AppBar username={user?.username} />
 			<div style={{ marginTop: '100px' }}></div>
-			{user ? <Todos /> : <Auth setUser={setUser} />}
+			{user ? <Todos /> : <Auth />}
 		</>
 	)
 }

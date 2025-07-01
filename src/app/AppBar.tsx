@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
 import { Avatar, Stack, Tooltip } from '@mui/material'
+import { useTodosStore } from '../entities/Todo/model/store/useTodosStore.ts'
 
 type Props = {
 	access_token?: string
@@ -17,6 +18,8 @@ type Props = {
 const ButtonAppBar = (props: Props) => {
 	const { username } = props
 	const { toggleColorMode, mode } = useThemeMode()
+	const todos = useTodosStore((state) => state.todos)
+	const undoneTodos = todos.filter((todo) => todo.completed)
 
 	return (
 		<Box sx={{ flexGrow: 1 }}>
@@ -29,7 +32,7 @@ const ButtonAppBar = (props: Props) => {
 					<Stack direction="row" spacing={2} style={{ flexGrow: 1 }}>
 						{username && (
 							<Typography variant="h6" component="div">
-								Todos
+								Todos{' ' + undoneTodos.length}
 							</Typography>
 						)}
 						<Typography variant="h6" component="div">

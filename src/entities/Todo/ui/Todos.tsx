@@ -1,85 +1,54 @@
-import { Card, CardActions, CardContent, Checkbox, IconButton, Stack, TextField, Typography } from '@mui/material'
-import { Edit, Save } from '@mui/icons-material'
+import { Container, Input, Stack } from '@mui/material'
+import { useTodosStore } from '../model/store/useTodosStore.ts'
+import { Todo } from './Todo.tsx'
 import { useState } from 'react'
+import Button from '@mui/material/Button'
 import type { TodoType } from '../model/todoType.ts'
-import { mockTodos } from '../model/mockTodos.ts'
-
-type TodoProps = {
-	todo: TodoType
-	setTodo: (todo: TodoType) => void
-}
-
-const Todo = ({ todo, setTodo }: TodoProps) => {
-	const [editMode, setEditMode] = useState(false)
-	const [title, setTitle] = useState(todo.title)
-	const [description, setDescription] = useState(todo.description)
-
-	const handleCheckClick = () => {
-		setTodo({ ...todo, completed: !todo.completed })
-	}
-
-	const handleSave = () => {
-		setTodo({ ...todo, title, description })
-		setEditMode(false)
-	}
-
-	return (
-		<Card variant="outlined" sx={{ maxWidth: 200 }}>
-			<CardContent>
-				{editMode ? (
-					<>
-						<TextField
-							label="Title"
-							value={title}
-							onChange={(e) => setTitle(e.target.value)}
-							variant="standard"
-							fullWidth
-							margin="dense"
-						/>
-						<TextField
-							label="Description"
-							value={description}
-							onChange={(e) => setDescription(e.target.value)}
-							variant="standard"
-							fullWidth
-							margin="dense"
-							multiline
-							rows={2}
-						/>
-					</>
-				) : (
-					<>
-						<Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>
-							{todo.title}
-						</Typography>
-						<Typography variant="body2">{todo.description}</Typography>
-					</>
-				)}
-			</CardContent>
-			<CardActions>
-				<Checkbox checked={todo.completed} size="small" onClick={handleCheckClick} />
-				<IconButton onClick={editMode ? handleSave : () => setEditMode(true)}>
-					{editMode ? <Save /> : <Edit />}
-				</IconButton>
-			</CardActions>
-		</Card>
-	)
-}
 
 const Todos = () => {
-	const [todos, setTodos] = useState<TodoType[]>(mockTodos)
+	const [newTodoTitle, setNewTodoTitle] = useState('')
+	const [newTodoDescription, setNewTodoDescription] = useState('')
+	const todos = useTodosStore((state) => state.todos)
+	const addTodo = useTodosStore((state) => state.addTodo)
+	const updateTodo = useTodosStore((state) => state.updateTodo)
+	const removeTodo = useTodosStore((state) => state.removeTodo)
 
-	const setTodo = (todo: TodoType) => {
-		const updatedTodos = todos.map((t) => (t._id === todo._id ? todo : t))
-		setTodos(updatedTodos)
+	const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setNewTodoTitle(e.target.value)
+	}
+	const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setNewTodoDescription(e.target.value)
+	}
+
+	const handleAddTodo = () => {
+		const newTodo: TodoType = {
+			_id: Date.now().toString(),
+			title: newTodoTitle,
+			description: newTodoDescription,
+			completed: false,
+			createdAt: new Date().toString(),
+			updatedAt: new Date().toString(),
+			order: todos.length + 1,
+		}
+		addTodo(newTodo)
+		setNewTodoTitle('')
+		setNewTodoDescription('')
 	}
 
 	return (
-		<Stack flexWrap="wrap" spacing={2} direction="row">
-			{todos.map((todo) => (
-				<Todo key={todo._id} todo={todo} setTodo={setTodo} />
-			))}
-		</Stack>
+		<Container>
+			<Input placeholder="title" value={newTodoTitle} onChange={handleTitleChange} />
+			<Input placeholder="description" value={newTodoDescription} onChange={handleDescriptionChange} />
+			<Button disabled={!newTodoTitle} onClick={handleAddTodo}>
+				Add
+			</Button>
+
+			<Stack flexWrap="wrap" spacing={2} direction="row">
+				{todos.map((todo) => (
+					<Todo key={todo._id} todo={todo} setTodo={updateTodo} onDelete={removeTodo} />
+				))}
+			</Stack>
+		</Container>
 	)
 }
 

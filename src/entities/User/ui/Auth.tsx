@@ -1,25 +1,22 @@
-import React, { useState, type SyntheticEvent, type Dispatch, type SetStateAction } from 'react'
+import React, { useState, type SyntheticEvent } from 'react'
 import { Container, InputAdornment, Stack, TextField, ToggleButton, ToggleButtonGroup } from '@mui/material'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
 import IconButton from '@mui/material/IconButton'
 import Button from '@mui/material/Button'
 import { AccountCircle } from '@mui/icons-material'
-import type { UserType } from '../model/userType.ts'
 import { useSnackbar } from 'notistack'
 import type { AxiosError } from 'axios'
 import { login, registerAndLogin } from '../api/authApi'
+import { useUserStore } from '../model/store/useUserStore.ts'
 
-type AuthProps = {
-	setUser: Dispatch<SetStateAction<UserType | null>>
-}
-
-const Auth = ({ setUser }: AuthProps) => {
+const Auth = () => {
 	const [showPassword, setShowPassword] = useState(false)
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
 	const [loading, setLoading] = useState(false)
 	const [loginFormName, setLoginFormName] = useState('login')
 	const { enqueueSnackbar } = useSnackbar()
+	const setUser = useUserStore((state) => state.setUser)
 
 	const toggleShowPassword = () => setShowPassword((prev) => !prev)
 	const handleUserNameChange = (e: SyntheticEvent<HTMLTextAreaElement | HTMLInputElement>) => {
