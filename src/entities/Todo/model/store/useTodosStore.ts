@@ -1,30 +1,35 @@
-import { create } from 'zustand'
-import { devtools } from 'zustand/middleware'
+import { createSlice } from '@reduxjs/toolkit'
+import type { PayloadAction } from '@reduxjs/toolkit'
+import type { TodoType } from '../todoType'
 import { mockTodos } from '../mockTodos.ts'
-import type { TodoType } from '../todoType.ts'
 
-type TodosState = {
+type TodoState = {
 	todos: TodoType[]
-	addTodo: (newTodo: TodoType) => void
-	setTodos: (todos: TodoType[]) => void
-	updateTodo: (updated: TodoType) => void
-	removeTodo: (id: string) => void
 }
 
-export const useTodosStore = create<TodosState>()(
-	devtools((set) => {
-		return {
-			todos: mockTodos,
-			addTodo: (newTodo: TodoType) => set((state) => ({ todos: [newTodo, ...state.todos] })),
-			setTodos: (todos: TodoType[]) => set({ todos }),
-			updateTodo: (updated: TodoType) =>
-				set((state) => ({
-					todos: state.todos.map((t) => (t._id === updated._id ? updated : t)),
-				})),
-			removeTodo: (id: string) =>
-				set((state) => ({
-					todos: state.todos.filter((todo) => todo._id !== id),
-				})),
-		}
-	})
-)
+const initialState: TodoState = {
+	todos: mockTodos,
+}
+
+const todoSlice = createSlice({
+	name: 'todos',
+	initialState,
+	reducers: {
+		addTodo: (state, action: PayloadAction<TodoType>) => {
+			state.todos.unshift(action.payload)
+		},
+		setTodos: (state, action: PayloadAction<TodoType[]>) => {
+			state.todos = action.payload
+		},
+		updateTodo: (state, action: PayloadAction<TodoType>) => {
+			state.todos = state.todos.map((t) => (t._id === action.payload._id ? action.payload : t))
+		},
+		removeTodo: (state, action: PayloadAction<string>) => {
+			state.todos = state.todos.filter((t) => t._id !== action.payload)
+		},
+	},
+})
+
+export const { addTodo, setTodos, updateTodo, removeTodo } = todoSlice.actions
+export const selectTodos = (state: { todos: TodoState }) => state.todos.todos
+export default todoSlice.reducer

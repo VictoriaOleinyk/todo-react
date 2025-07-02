@@ -2,23 +2,21 @@ import './App.css'
 import AppBar from './AppBar.tsx'
 import { useEffect } from 'react'
 import Auth from '../entities/User/ui/Auth.tsx'
-import { useUserStore } from '../entities/User/model/store/useUserStore.ts'
 import Todos from '../entities/Todo/ui/Todos.tsx'
 import { autoLogin } from '../shared/util/autoLogin.ts'
+import { useAppDispatch, useAppSelector } from './store.ts'
+import { selectUser, setUser } from '../entities/User/model/store/userStore.ts'
 
 function App() {
-	const userFromLS = autoLogin()
-
-	// zustand store
-	const user = useUserStore((state) => state.user)
-	const setUser = useUserStore((state) => state.setUser)
+	const dispatch = useAppDispatch()
+	const user = useAppSelector(selectUser)
 
 	useEffect(() => {
-		if (userFromLS) {
-			setUser(userFromLS)
+		const userFromLS = autoLogin()
+		if (userFromLS && !user?.username) {
+			dispatch(setUser(userFromLS))
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [])
+	}, [dispatch, user?.username])
 
 	return (
 		<>

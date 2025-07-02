@@ -6,8 +6,12 @@ import Button from '@mui/material/Button'
 import { AccountCircle } from '@mui/icons-material'
 import { useSnackbar } from 'notistack'
 import type { AxiosError } from 'axios'
-import { login, registerAndLogin } from '../api/authApi'
-import { useUserStore } from '../model/store/useUserStore.ts'
+import { registerAndLogin } from '../api/authApi'
+import { setUser } from '../model/store/userStore.ts'
+import type { UserType } from '../model/userType.ts'
+import { rootApi } from '../../../shared/rootApi.ts'
+import { jwtDecode } from 'jwt-decode'
+import { useAppDispatch } from '../../../app/store.ts'
 
 const Auth = () => {
 	const [showPassword, setShowPassword] = useState(false)
@@ -16,7 +20,7 @@ const Auth = () => {
 	const [loading, setLoading] = useState(false)
 	const [loginFormName, setLoginFormName] = useState('login')
 	const { enqueueSnackbar } = useSnackbar()
-	const setUser = useUserStore((state) => state.setUser)
+	const dispatch = useAppDispatch()
 
 	const toggleShowPassword = () => setShowPassword((prev) => !prev)
 	const handleUserNameChange = (e: SyntheticEvent<HTMLTextAreaElement | HTMLInputElement>) => {
@@ -28,8 +32,19 @@ const Auth = () => {
 	const handleLogin = async () => {
 		setLoading(true)
 		try {
-			const user = await login(username, password)
-			setUser(user)
+			const response = await rootApi.post<UserType>('/auth/login', {
+				username,
+				password,
+			})
+
+			const accessToken = response.data.access_token
+			localStorage.setItem('access_token', accessToken)
+
+			console.warn(jwtDecode(accessToken))
+			const setUserAction = setUser(response.data)
+			console.log(setUserAction)
+			dispatch(setUser(response.data)) // <-- как в твоём примере
+
 			enqueueSnackbar('Welcome back!', { variant: 'success' })
 		} catch (error) {
 			const axiosError = error as AxiosError<{ message: string }>
@@ -43,7 +58,12 @@ const Auth = () => {
 		setLoading(true)
 		try {
 			const user = await registerAndLogin(username, password)
-			setUser(user)
+
+			const accessToken = user.access_token
+			localStorage.setItem('access_token', accessToken)
+
+			dispatch(setUser(user))
+
 			enqueueSnackbar('Регистрация и вход успешны!', { variant: 'success' })
 			setLoginFormName('login')
 		} catch (error) {

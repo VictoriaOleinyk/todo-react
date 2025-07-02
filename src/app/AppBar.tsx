@@ -7,19 +7,27 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
-import { Avatar, Stack, Tooltip } from '@mui/material'
-import { useTodosStore } from '../entities/Todo/model/store/useTodosStore.ts'
+import { Avatar, Button, Stack, Tooltip } from '@mui/material'
+
+import { useAppDispatch, useAppSelector } from './store.ts'
+import { removeUser } from '../entities/User/model/store/userStore.ts'
+import { selectTodos } from '../entities/Todo/model/store/useTodosStore.ts'
 
 type Props = {
 	access_token?: string
 	username?: string
 }
 
-const ButtonAppBar = (props: Props) => {
-	const { username } = props
+const ButtonAppBar = ({ username }: Props) => {
 	const { toggleColorMode, mode } = useThemeMode()
-	const todos = useTodosStore((state) => state.todos)
-	const undoneTodos = todos.filter((todo) => todo.completed)
+	const todos = useAppSelector(selectTodos)
+	const undoneTodos = todos.filter((todo) => !todo.completed)
+	const dispatch = useAppDispatch()
+
+	const handleLogout = () => {
+		localStorage.removeItem('access_token')
+		dispatch(removeUser())
+	}
 
 	return (
 		<Box sx={{ flexGrow: 1 }}>
@@ -29,10 +37,10 @@ const ButtonAppBar = (props: Props) => {
 						<MenuIcon />
 					</IconButton>
 
-					<Stack direction="row" spacing={2} style={{ flexGrow: 1 }}>
+					<Stack direction="row" spacing={2} sx={{ flexGrow: 1 }}>
 						{username && (
 							<Typography variant="h6" component="div">
-								Todos{' ' + undoneTodos.length}
+								Todos {undoneTodos.length}
 							</Typography>
 						)}
 						<Typography variant="h6" component="div">
@@ -45,11 +53,16 @@ const ButtonAppBar = (props: Props) => {
 					</IconButton>
 
 					{username && (
-						<Tooltip title={username}>
-							<Avatar src={''} alt={username}>
-								{username[0]}
-							</Avatar>
-						</Tooltip>
+						<>
+							<Button color="inherit" onClick={handleLogout}>
+								Logout
+							</Button>
+							<Tooltip title={username}>
+								<Avatar src={''} alt={username}>
+									{username[0]}
+								</Avatar>
+							</Tooltip>
+						</>
 					)}
 				</Toolbar>
 			</AppBar>
