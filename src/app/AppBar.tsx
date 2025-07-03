@@ -10,19 +10,19 @@ import MenuIcon from '@mui/icons-material/Menu'
 import { Avatar, Button, Stack, Tooltip } from '@mui/material'
 
 import { useAppDispatch, useAppSelector } from './store.ts'
-import { removeUser } from '../entities/User/model/store/userStore.ts'
-import { selectTodos } from '../entities/Todo/model/store/useTodosStore.ts'
+import { removeUser, selectUser } from '../entities/User/model/store/userStore.ts'
+import { selectUndoneTodosLength } from '../entities/Todo/model/store/selectors/selectUnDoneTodos.ts'
+import { NavLink, useLocation } from 'react-router'
 
-type Props = {
-	access_token?: string
-	username?: string
-}
-
-const ButtonAppBar = ({ username }: Props) => {
+const ButtonAppBar = () => {
 	const { toggleColorMode, mode } = useThemeMode()
-	const todos = useAppSelector(selectTodos)
-	const undoneTodos = todos.filter((todo) => !todo.completed)
 	const dispatch = useAppDispatch()
+	const location = useLocation()
+
+	const isAboutPage = location.pathname === '/about'
+	const user = useAppSelector(selectUser)
+	const username = user?.username
+	const undoneCount = useAppSelector(selectUndoneTodosLength)
 
 	const handleLogout = () => {
 		localStorage.removeItem('access_token')
@@ -40,11 +40,12 @@ const ButtonAppBar = ({ username }: Props) => {
 					<Stack direction="row" spacing={2} sx={{ flexGrow: 1 }}>
 						{username && (
 							<Typography variant="h6" component="div">
-								Todos {undoneTodos.length}
+								Todos {undoneCount}
 							</Typography>
 						)}
+
 						<Typography variant="h6" component="div">
-							About
+							<NavLink to={isAboutPage ? '/' : '/about'}>{isAboutPage ? 'Home' : 'About'}</NavLink>
 						</Typography>
 					</Stack>
 
@@ -52,7 +53,7 @@ const ButtonAppBar = ({ username }: Props) => {
 						{mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
 					</IconButton>
 
-					{username && (
+					{username ? (
 						<>
 							<Button color="inherit" onClick={handleLogout}>
 								Logout
@@ -63,6 +64,10 @@ const ButtonAppBar = ({ username }: Props) => {
 								</Avatar>
 							</Tooltip>
 						</>
+					) : (
+						<Button color="inherit" component={NavLink} to="/">
+							Login
+						</Button>
 					)}
 				</Toolbar>
 			</AppBar>

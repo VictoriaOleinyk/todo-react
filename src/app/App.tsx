@@ -1,5 +1,5 @@
 import './App.css'
-import AppBar from './AppBar.tsx'
+
 import { useEffect } from 'react'
 import Auth from '../entities/User/ui/Auth.tsx'
 import Todos from '../entities/Todo/ui/Todos.tsx'
@@ -18,13 +18,7 @@ function App() {
 		}
 	}, [dispatch, user?.username])
 
-	return (
-		<>
-			<AppBar username={user?.username} />
-			<div style={{ marginTop: '100px' }}></div>
-			{user ? <Todos /> : <Auth />}
-		</>
-	)
+	return <>{user ? <Todos /> : <Auth />}</>
 }
 
 export default App
