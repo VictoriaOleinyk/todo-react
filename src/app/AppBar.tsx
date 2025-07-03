@@ -7,12 +7,12 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
-import { Avatar, Button, Stack, Tooltip } from '@mui/material'
+import { Avatar, Button, MenuItem, Stack, Tooltip } from '@mui/material'
 
 import { useAppDispatch, useAppSelector } from './store.ts'
 import { removeUser, selectUser } from '../entities/User/model/store/userStore.ts'
 import { selectUndoneTodosLength } from '../entities/Todo/model/store/selectors/selectUnDoneTodos.ts'
-import { NavLink, useLocation } from 'react-router'
+import { NavLink, useLocation, useNavigate } from 'react-router'
 
 const ButtonAppBar = () => {
 	const { toggleColorMode, mode } = useThemeMode()
@@ -24,9 +24,15 @@ const ButtonAppBar = () => {
 	const username = user?.username
 	const undoneCount = useAppSelector(selectUndoneTodosLength)
 
+	const navigate = useNavigate()
+
 	const handleLogout = () => {
 		localStorage.removeItem('access_token')
 		dispatch(removeUser())
+		navigate('/auth')
+	}
+	const handleRedirectToProfile = () => {
+		navigate('/profile')
 	}
 
 	return (
@@ -53,6 +59,8 @@ const ButtonAppBar = () => {
 						{mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
 					</IconButton>
 
+					{username && <MenuItem onClick={handleRedirectToProfile}>Profile</MenuItem>}
+
 					{username ? (
 						<>
 							<Button color="inherit" onClick={handleLogout}>
@@ -65,7 +73,7 @@ const ButtonAppBar = () => {
 							</Tooltip>
 						</>
 					) : (
-						<Button color="inherit" component={NavLink} to="/">
+						<Button color="inherit" component={NavLink} to="/auth">
 							Login
 						</Button>
 					)}
