@@ -1,12 +1,14 @@
 // Auth.tsx
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Container, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material'
-import { Outlet, useLocation, useNavigate } from 'react-router'
+import { Navigate, Outlet, useLocation, useNavigate } from 'react-router'
+import { selectUser } from '../model/store/userStore.ts'
+import { useAppSelector } from '../../../app/store.ts'
 
 const Auth = () => {
 	const navigate = useNavigate()
 	const location = useLocation()
-
+	const user = useAppSelector(selectUser)
 	const currentPath = location.pathname.endsWith('register') ? 'register' : 'login'
 
 	const handleChange = (_: React.MouseEvent<HTMLElement>, newMode: string) => {
@@ -15,11 +17,15 @@ const Auth = () => {
 		}
 	}
 
-	useEffect(() => {
-		if (location.pathname === '/auth') {
-			navigate('/auth/login')
-		}
-	}, [location.pathname, navigate])
+	// useEffect(() => {
+	// 	if (location.pathname === '/auth') {
+	// 		navigate('/auth/login')
+	// 	}
+	// }, [location.pathname, navigate])
+
+	if (user) {
+		return <Navigate to={'/'} />
+	}
 
 	return (
 		<Container maxWidth="sm">

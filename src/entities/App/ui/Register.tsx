@@ -7,7 +7,7 @@ import type { AxiosError } from 'axios'
 import { useAppDispatch } from '../../../app/store.ts'
 import { registerAndLogin } from '../../User/api/authApi.ts'
 import { setUser } from '../../User/model/store/userStore.ts'
-import { useNavigate } from 'react-router'
+import { useLocation, useNavigate } from 'react-router'
 
 const Register = () => {
 	const [showPassword, setShowPassword] = useState(false)
@@ -17,6 +17,9 @@ const Register = () => {
 	const { enqueueSnackbar } = useSnackbar()
 	const dispatch = useAppDispatch()
 	const navigate = useNavigate()
+	const location = useLocation()
+	const params = new URLSearchParams(location.search)
+	const from = params.get('from') || '/'
 	const toggleShowPassword = () => setShowPassword((prev) => !prev)
 	const handleUserNameChange = (e: SyntheticEvent<HTMLTextAreaElement | HTMLInputElement>) => {
 		setUsername(e.currentTarget.value)
@@ -34,7 +37,7 @@ const Register = () => {
 			dispatch(setUser(user))
 
 			enqueueSnackbar('Регистрация и вход успешны!', { variant: 'success' })
-			navigate('/todos')
+			navigate(from, { replace: true })
 		} catch (error) {
 			const axiosError = error as AxiosError<{ message: string }>
 			enqueueSnackbar(axiosError.response?.data.message || 'Ошибка регистрации', { variant: 'error' })

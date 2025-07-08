@@ -1,6 +1,7 @@
 import { Component } from 'react'
 import AppBar from '../../../app/AppBar.tsx'
 import { Outlet } from 'react-router'
+import ErrorHandler from './ErrorHandler.tsx'
 
 class Layout extends Component {
 	render() {
@@ -8,7 +9,9 @@ class Layout extends Component {
 			<>
 				<AppBar />
 				<div style={{ marginTop: '100px' }}>
-					<Outlet />
+					<ErrorHandler>
+						<Outlet />
+					</ErrorHandler>
 				</div>
 			</>
 		)

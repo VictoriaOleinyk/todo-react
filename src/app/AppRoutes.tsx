@@ -8,18 +8,38 @@ import Register from '../entities/App/ui/Register.tsx'
 import Auth from '../entities/User/ui/Auth.tsx'
 import Todos from '../entities/Todo/ui/Todos.tsx'
 import Profile from '../entities/User/ui/Profile.tsx'
+import Redirector from '../entities/App/ui/Redirector.tsx'
+import RequireAuth from './RequireAuth.tsx'
 
 const AppRoutes = () => {
 	return (
 		<Routes>
 			<Route element={<Layout />}>
-				<Route path="/" element={<App />} />
+				<Route element={<Redirector />}>
+					<Route path="/" element={<App />} />
+					<Route
+						path="/profile"
+						element={
+							<RequireAuth>
+								<Profile />
+							</RequireAuth>
+						}
+					/>
+				</Route>
+
 				<Route path="/auth" element={<Auth />}>
 					<Route path="login" element={<Login />} />
 					<Route path="register" element={<Register />} />
 				</Route>
-				<Route path="/profile" element={<Profile />} />
-				<Route path="/todos" element={<Todos />} />
+
+				<Route
+					path="/todos"
+					element={
+						<RequireAuth>
+							<Todos />
+						</RequireAuth>
+					}
+				/>
 				<Route path={'/about'} element={<About />} />
 				<Route path={'*'} element={<NotFound />} />
 			</Route>

@@ -9,7 +9,7 @@ import { jwtDecode } from 'jwt-decode'
 import { useAppDispatch } from '../../../app/store.ts'
 import type { UserType } from '../../User/model/userType.ts'
 import { setUser } from '../../User/model/store/userStore.ts'
-import { useNavigate } from 'react-router'
+import { useLocation, useNavigate } from 'react-router'
 
 const Login = () => {
 	const [showPassword, setShowPassword] = useState(false)
@@ -17,6 +17,11 @@ const Login = () => {
 	const [password, setPassword] = useState('')
 	const [loading, setLoading] = useState(false)
 	const { enqueueSnackbar } = useSnackbar()
+	const navigate = useNavigate()
+	const location = useLocation()
+	const params = new URLSearchParams(location.search)
+	const from = params.get('from') || '/'
+
 	const dispatch = useAppDispatch()
 
 	const toggleShowPassword = () => setShowPassword((prev) => !prev)
@@ -26,8 +31,6 @@ const Login = () => {
 	const handlePasswordChange = (e: SyntheticEvent<HTMLTextAreaElement | HTMLInputElement>) => {
 		setPassword(e.currentTarget.value)
 	}
-
-	const navigate = useNavigate()
 
 	const handleLogin = async () => {
 		setLoading(true)
@@ -45,7 +48,7 @@ const Login = () => {
 
 			enqueueSnackbar('Welcome back!', { variant: 'success' })
 
-			navigate('/todos')
+			navigate(from, { replace: true })
 		} catch (error) {
 			const axiosError = error as AxiosError<{ message: string }>
 			enqueueSnackbar(axiosError.response?.data.message || 'Unknown error', { variant: 'error' })
