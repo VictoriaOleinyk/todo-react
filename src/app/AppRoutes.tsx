@@ -10,6 +10,7 @@ import Todos from '../entities/Todo/ui/Todos.tsx'
 import Profile from '../entities/User/ui/Profile.tsx'
 import Redirector from '../entities/App/ui/Redirector.tsx'
 import RequireAuth from './RequireAuth.tsx'
+import SingleTodo from '../entities/Todo/ui/SingleTodo.tsx'
 
 const AppRoutes = () => {
 	return (
@@ -22,6 +23,14 @@ const AppRoutes = () => {
 						element={
 							<RequireAuth>
 								<Profile />
+							</RequireAuth>
+						}
+					/>
+					<Route
+						path="/todo/:_id"
+						element={
+							<RequireAuth>
+								<SingleTodo />
 							</RequireAuth>
 						}
 					/>

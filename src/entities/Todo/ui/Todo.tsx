@@ -1,30 +1,46 @@
 import { Card, CardActions, CardContent, Checkbox, IconButton, TextField, Typography } from '@mui/material'
-import { useState } from 'react'
+import { useState, memo } from 'react'
 import type { TodoType } from '../model/todoType'
 import { Delete, Edit, Save } from '@mui/icons-material'
+import { NavLink } from 'react-router'
 
 type TodoProps = {
 	todo: TodoType
 	setTodo?: (todo: TodoType) => void
 	onDelete: (id: string) => void
+	onUpdate: (todo: TodoType) => void
 }
-export const Todo = ({ todo, setTodo, onDelete }: TodoProps) => {
+
+const TodoComponent = ({ todo, setTodo, onDelete, onUpdate }: TodoProps) => {
 	const [editMode, setEditMode] = useState(false)
 	const [title, setTitle] = useState(todo.title)
 	const [description, setDescription] = useState(todo.description)
 
 	const handleCheckClick = () => {
-		setTodo?.({ ...todo, completed: !todo.completed })
+		const updated = { ...todo, completed: !todo.completed }
+		setTodo?.(updated)
+		onUpdate(updated)
 	}
 
 	const handleSave = () => {
-		setTodo?.({ ...todo, title, description })
+		const updated = { ...todo, title, description }
+		setTodo?.(updated)
+		onUpdate(updated)
 		setEditMode(false)
 	}
 
 	return (
 		<Card variant="outlined" sx={{ maxWidth: 200 }}>
 			<CardContent>
+				<Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'right' }}>
+					created: {new Date(todo.createdAt).toLocaleString()}
+				</Typography>
+				{todo.updatedAt && (
+					<Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'right' }}>
+						updated: {new Date(todo.updatedAt).toLocaleString()}
+					</Typography>
+				)}
+
 				{editMode ? (
 					<>
 						<TextField
@@ -49,7 +65,7 @@ export const Todo = ({ todo, setTodo, onDelete }: TodoProps) => {
 				) : (
 					<>
 						<Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>
-							{todo.title}
+							<NavLink to={`/todo/${todo._id}`}>{todo.title} </NavLink>
 						</Typography>
 						<Typography variant="body2">{todo.description}</Typography>
 					</>
@@ -67,3 +83,5 @@ export const Todo = ({ todo, setTodo, onDelete }: TodoProps) => {
 		</Card>
 	)
 }
+
+export const Todo = memo(TodoComponent)

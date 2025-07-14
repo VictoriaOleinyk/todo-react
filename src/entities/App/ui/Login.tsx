@@ -3,7 +3,7 @@ import { Container, InputAdornment, Stack, TextField, IconButton, Button } from 
 import { Visibility, VisibilityOff, AccountCircle } from '@mui/icons-material'
 import { useSnackbar } from 'notistack'
 import type { AxiosError } from 'axios'
-import { rootApi } from '../../../shared/rootApi.ts'
+import { rootApi } from '../../../shared/api/rootApi.ts'
 
 import { jwtDecode } from 'jwt-decode'
 import { useAppDispatch } from '../../../app/store.ts'

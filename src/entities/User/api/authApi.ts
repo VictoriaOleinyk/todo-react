@@ -1,4 +1,4 @@
-import { rootApi } from '../../../shared/rootApi'
+import { rootApi } from '../../../shared/api/rootApi.ts'
 import type { UserType } from '../model/userType'
 import { jwtDecode } from 'jwt-decode'
 

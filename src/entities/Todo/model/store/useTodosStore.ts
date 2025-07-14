@@ -1,35 +1,52 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import type { TodoType } from '../todoType'
-import { mockTodos } from '../mockTodos.ts'
 
-type TodoState = {
+export type TodosType = {
 	todos: TodoType[]
+	filters: {
+		completed: 'true' | 'false' | 'all'
+		page: number
+		limit: number
+		search?: string
+	}
 }
 
-const initialState: TodoState = {
-	todos: mockTodos,
+const initialState: TodosType = {
+	todos: [],
+	filters: {
+		limit: 5,
+		page: 1,
+		completed: 'all',
+	},
 }
 
 const todoSlice = createSlice({
 	name: 'todos',
 	initialState,
 	reducers: {
-		addTodo: (state, action: PayloadAction<TodoType>) => {
-			state.todos.unshift(action.payload)
-		},
 		setTodos: (state, action: PayloadAction<TodoType[]>) => {
 			state.todos = action.payload
 		},
 		updateTodo: (state, action: PayloadAction<TodoType>) => {
 			state.todos = state.todos.map((t) => (t._id === action.payload._id ? action.payload : t))
 		},
-		removeTodo: (state, action: PayloadAction<string>) => {
-			state.todos = state.todos.filter((t) => t._id !== action.payload)
+		setLimit: (state, action) => {
+			state.filters.limit = action.payload
+		},
+		setPage: (state, action) => {
+			state.filters.page = action.payload
+		},
+		setCompletedFilter: (state, action: PayloadAction<'all' | 'true' | 'false'>) => {
+			state.filters.completed = action.payload
+		},
+		setSearch: (state, action) => {
+			state.filters.search = action.payload
 		},
 	},
 })
 
-export const { addTodo, setTodos, updateTodo, removeTodo } = todoSlice.actions
-export const selectTodos = (state: { todos: TodoState }) => state.todos.todos
+export const { setTodos, updateTodo, setCompletedFilter, setPage, setSearch, setLimit } = todoSlice.actions
+export const selectTodos = (state: { todos: TodosType }) => state.todos.todos
+export const selectFilters = (state: { todos: TodosType }) => state.todos.filters
 export default todoSlice.reducer
